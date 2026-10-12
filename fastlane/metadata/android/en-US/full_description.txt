@@ -1,0 +1,16 @@
+A world clock where every city is a window onto its sky. Sunrise, noon, dusk and night come from the sun's real position, so you can tell at a glance who's awake.
+
+* Each card is coloured by the sun's elevation in that city right now, with stars after dark and a 24-hour daylight strip underneath.
+* Drag sideways to move time for every city at once (15-minute steps). A chip shows how far you've gone; tap it to come back to now.
+* Cities are sorted by UTC offset, each labelled Today, Tomorrow or Yesterday with its difference from you.
+* About 150 built-in cities and every IANA time zone work fully offline.
+* Any other town ("Hilo, HI", "Banff, AB") is found through Open-Meteo's free geocoder, which also returns its time zone. Only the typed name is sent.
+* Long-press a city to remove it. Long-press your own card to rename it or hide it.
+* Seven themes, switched by tapping the dot at the top right: You (Material You colours from your wallpaper), Night (pure AMOLED black and red, for the dark), Auto (Night from 21:00 to 07:00, You otherwise), Mono, Ember, Glacier and Paper (light).
+
+Tiny (under 100 KB), no ads, no tracking, no analytics, no Google Play Services. Android 13 or newer.
+
+Permissions:
+* INTERNET: Only to look up towns that aren't built in. Everything else works with network access off.
+
+One of three single-purpose tools: World, Timer and Alarm.
