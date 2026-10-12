@@ -22,6 +22,7 @@ import org.robbiemed.clock.core.Themes
 import org.robbiemed.clock.core.alpha
 import org.robbiemed.clock.core.clock
 import org.robbiemed.clock.core.edgeToEdge
+import org.robbiemed.clock.core.mix
 import org.robbiemed.clock.core.no
 import org.robbiemed.clock.core.store
 import org.robbiemed.clock.core.tick
@@ -159,7 +160,11 @@ class MainActivity : Activity() {
                     fill.shader = LinearGradient(0f, row.r.top, 0f, row.r.bottom, skyHi, sky, Shader.TileMode.CLAMP)
                     c.drawRoundRect(row.r, dp(30f), dp(30f), fill)
                     fill.shader = null
-                    if (el < -4) stars(c, row.r, ct.name.hashCode(), ((-4 - el) / 10).toFloat().coerceIn(0f, 1f))
+                    // Paper's night cards are dark: flip their type and stars to the paper colour.
+                    val ink = if (pal.light && Sky.lum(mix(sky, skyHi, 0.5f)) < 0.5f) pal.bg else pal.ink
+                    val paper = if (ink == pal.ink) pal.bg else pal.ink
+                    name.color = ink; time.color = ink; ampm.color = alpha(ink, 0.7f); rel.color = alpha(ink, 0.68f)
+                    if (el < -4) stars(c, row.r, ct.name.hashCode(), ((-4 - el) / 10).toFloat().coerceIn(0f, 1f), if (pal.light) pal.bg else pal.ink)
 
                     val cal = Calendar.getInstance(ct.zone).apply { timeInMillis = now }
                     val (hm, ap) = context.clock(cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE))
@@ -172,14 +177,14 @@ class MainActivity : Activity() {
                     if (removing === row) {
                         val bw = dp(120f); val bh = dp(52f)
                         removeR.set(row.r.right - dp(20f) - bw, row.r.centerY() - bh / 2, row.r.right - dp(20f), row.r.centerY() + bh / 2)
-                        fill.color = pal.ink; c.drawRoundRect(removeR, bh / 2, bh / 2, fill)
-                        chipT.color = pal.bg
+                        fill.color = ink; c.drawRoundRect(removeR, bh / 2, bh / 2, fill)
+                        chipT.color = paper
                         c.text(if (row.here) "Hide" else "Remove", removeR.centerX(), removeR.centerY() + chipT.textSize * 0.36f, chipT, Paint.Align.CENTER)
                         if (row.here) {
                             renameR.set(removeR.left - dp(12f) - bw, removeR.top, removeR.left - dp(12f), removeR.bottom)
-                            line.color = pal.ink; line.strokeWidth = dp(1.5f)
+                            line.color = ink; line.strokeWidth = dp(1.5f)
                             c.drawRoundRect(renameR, bh / 2, bh / 2, line)
-                            chipT.color = pal.ink
+                            chipT.color = ink
                             c.text("Rename", renameR.centerX(), renameR.centerY() + chipT.textSize * 0.36f, chipT, Paint.Align.CENTER)
                         }
                     } else {
@@ -198,7 +203,7 @@ class MainActivity : Activity() {
                     strip.shader = LinearGradient(sx0, 0f, sx1, 0f, bright, null, Shader.TileMode.CLAMP)
                     c.drawRoundRect(sx0, sy - dp(3f), sx1, sy + dp(3f), dp(3f), dp(3f), strip)
                     strip.shader = null
-                    line.color = pal.ink; line.strokeWidth = dp(2f)
+                    line.color = ink; line.strokeWidth = dp(2f)
                     val mx = (sx0 + sx1) / 2
                     c.drawLine(mx, sy - dp(7f), mx, sy + dp(7f), line)
                 }
@@ -219,9 +224,9 @@ class MainActivity : Activity() {
         }
 
         /** A few fixed stars per city, fading in as the sun drops below the horizon. */
-        private fun stars(c: Canvas, r: RectF, seed: Int, k: Float) {
+        private fun stars(c: Canvas, r: RectF, seed: Int, k: Float, color: Int) {
             var x = seed.toLong() and 0xffffffffL
-            fill.color = alpha(pal.ink, 0.55f * k)
+            fill.color = alpha(color, 0.55f * k)
             for (i in 0 until 22) {
                 x = (x * 1103515245 + 12345) and 0x7fffffff
                 val fx = (x % 1000) / 1000f

@@ -42,15 +42,17 @@ object Sky {
         return stops.last().second
     }
 
+    fun lum(c: Int) = (0.30f * Color.red(c) + 0.59f * Color.green(c) + 0.11f * Color.blue(c)) / 255f
+
     /** The sky, re-voiced in the active theme (Night = luminance in red only). */
     fun color(el: Double, pal: Palette, theme: String): Int {
         val c = natural(el)
-        val lum = (0.30f * Color.red(c) + 0.59f * Color.green(c) + 0.11f * Color.blue(c)) / 255f
+        val lum = lum(c)
         val day = ((el + 12) / 30).toFloat().coerceIn(0f, 1f)
         return when (theme) {
             "Night" -> Color.rgb((40 + 150 * lum * 1.6f).toInt().coerceAtMost(200), 0, 0).let { mix(0xFF080000.toInt(), it, 0.25f + 0.5f * day) }
             "Mono" -> mix(0xFF050505.toInt(), 0xFF5A5A5A.toInt(), day * 0.9f)
-            "Paper" -> mix(pal.surface, c, 0.28f)
+            "Paper" -> mix(pal.surface, c, 0.28f + 0.62f * (1 - day)) // pale wash by day, deepening to ink at night
             "Ember" -> mix(c, 0xFF3A1A06.toInt(), 0.45f)
             "Glacier" -> mix(c, 0xFF06223A.toInt(), 0.35f)
             else -> mix(c, pal.deep, 0.18f)
